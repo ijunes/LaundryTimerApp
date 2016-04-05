@@ -13,7 +13,7 @@ public class TimerService extends Service{
             return TimerService.this;
         }
     }
-
+    private Timer timer = new Timer();
     private LocalBinder localBinder = new LocalBinder();
 
     @Nullable
