@@ -28,4 +28,8 @@ dependencies {
     compile 'com.android.support:design:23.2.1'
     compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
+    compile ("com.hwangjr.rxbus:rxbus:1.0.3@aar") {
+        exclude group: 'com.hwangjr.utils', module: 'timber'
+    }
+
 }
