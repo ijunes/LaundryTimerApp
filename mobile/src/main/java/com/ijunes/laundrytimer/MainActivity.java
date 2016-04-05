@@ -19,8 +19,8 @@ import com.hwangjr.rxbus.annotation.Subscribe;
 import com.hwangjr.rxbus.annotation.Tag;
 import com.hwangjr.rxbus.thread.EventThread;
 import com.ijunes.laundrytimer.adapters.SectionsPagerAdapter;
-
-import java.util.List;
+import com.ijunes.laundrytimer.event.BusAction;
+import com.ijunes.laundrytimer.event.EventBus;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
