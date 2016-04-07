@@ -1,5 +1,6 @@
 package com.ijunes.laundrytimer;
 
+import android.animation.ObjectAnimator;
 import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
@@ -20,6 +21,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import com.github.zeng1990java.widget.WaveProgressView;
 import com.hwangjr.rxbus.annotation.Produce;
 import com.hwangjr.rxbus.annotation.Tag;
 import com.hwangjr.rxbus.thread.EventThread;
@@ -77,10 +79,14 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
+
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.main_sliding_tabs);
         if (mSlidingTabLayout != null) {
             mSlidingTabLayout.setViewPager(mViewPager);
         }
+
+
+
         startService(new Intent(this, TimerService.class));
         bindTimerService();
         mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -191,14 +197,5 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-    @Produce(
-            thread = EventThread.IO,
-            tags = {
-                    @Tag(BusAction.START_WASH)
-            }
-    )
-    public long startTimerEvent() {
-        return 0;
-    }
 
 }
