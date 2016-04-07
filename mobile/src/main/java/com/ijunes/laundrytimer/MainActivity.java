@@ -1,5 +1,6 @@
 package com.ijunes.laundrytimer;
 
+import android.app.PendingIntent;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -19,13 +20,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.hwangjr.rxbus.annotation.Subscribe;
+import com.hwangjr.rxbus.annotation.Produce;
 import com.hwangjr.rxbus.annotation.Tag;
 import com.hwangjr.rxbus.thread.EventThread;
 import com.ijunes.laundrytimer.adapters.SectionsPagerAdapter;
 import com.ijunes.laundrytimer.event.BusAction;
 import com.ijunes.laundrytimer.event.EventBus;
 import com.ijunes.laundrytimer.service.TimerService;
+import com.ijunes.laundrytimer.widgets.SlidingTabLayout;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -38,34 +40,34 @@ public class MainActivity extends AppCompatActivity
      * may be best to switch to a
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
-    private SectionsPagerAdapter sectionsPagerAdapter;
+    private SectionsPagerAdapter mSectionsPagerAdapter;
 
     /**
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
-
-    private TimerService timerService;
-    private ServiceConnection timerServiceConn = new ServiceConnection() {
+    private SlidingTabLayout mSlidingTabLayout;
+    private TimerService mTimerService;
+    private ServiceConnection mTimerServiceConn = new ServiceConnection() {
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
-            timerService = ((TimerService.LocalBinder) service).getService();
+            mTimerService = ((TimerService.LocalBinder) service).getService();
         }
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-            timerService = null;
+            mTimerService = null;
         }
     };
 
     private void bindTimerService() {
         bindService(new Intent(this, TimerService.class),
-                timerServiceConn, Context.BIND_AUTO_CREATE);
+                mTimerServiceConn, Context.BIND_AUTO_CREATE);
     }
 
     private void unbindTimerService() {
-        if (timerService != null) {
-            unbindService(timerServiceConn);
+        if (mTimerService != null) {
+            unbindService(mTimerServiceConn);
         }
     }
 
@@ -73,25 +75,37 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
         setSupportActionBar(toolbar);
-
+        mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.main_sliding_tabs);
+        if (mSlidingTabLayout != null) {
+            mSlidingTabLayout.setViewPager(mViewPager);
+        }
         startService(new Intent(this, TimerService.class));
         bindTimerService();
-        sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        mSectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         if (mViewPager != null) {
-            mViewPager.setAdapter(sectionsPagerAdapter);
+            mViewPager.setAdapter(mSectionsPagerAdapter);
         }
+
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         if (fab != null) {
             fab.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    timerService.start();
+                    Intent stopIntent = new Intent(TimerService.START_ACTION);
+                    PendingIntent startPendingIntent = PendingIntent.getBroadcast(MainActivity.this,
+                            0, stopIntent, 0);
+                    try {
+                        startPendingIntent.send();
+                    } catch (PendingIntent.CanceledException e) {
+                        e.printStackTrace();
+                    }
+
                 }
             });
         }
@@ -150,13 +164,11 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_machines) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
+        } else if (id == R.id.nav_history) {
 
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_settings) {
 
         } else if (id == R.id.nav_share) {
 
@@ -179,21 +191,14 @@ public class MainActivity extends AppCompatActivity
         super.onDestroy();
     }
 
-
-    @Subscribe(
+    @Produce(
             thread = EventThread.IO,
-            tags = { @Tag(BusAction.START_WASH) }
+            tags = {
+                    @Tag(BusAction.START_WASH)
+            }
     )
-    public void startWash(long machineId) {
-        // purpose
-    }
-
-    @Subscribe(
-            thread = EventThread.IO,
-            tags = { @Tag(BusAction.START_DRY) }
-    )
-    public void startDry(long machineId) {
-        // purpose
+    public long startTimerEvent() {
+        return 0;
     }
 
 }

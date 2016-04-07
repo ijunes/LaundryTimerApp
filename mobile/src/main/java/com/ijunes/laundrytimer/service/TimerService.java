@@ -1,11 +1,12 @@
 package com.ijunes.laundrytimer.service;
 
-
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.Service;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Binder;
 import android.os.Handler;
 import android.os.IBinder;
@@ -19,21 +20,28 @@ import com.ijunes.laundrytimer.R;
 import timber.log.Timber;
 
 public class TimerService extends Service {
+    public static final String START_ACTION = "com.ijunes.laundrytimer.timer.START";
+    public static final String PAUSE_ACTION = "com.ijunes.laundrytimer.timer.PAUSE";
+    public static final String RESTART_ACTION = "com.ijunes.laundrytimer.timer.RESTART";
+    public static final String STOP_ACTION = "com.ijunes.laundrytimer.timer.STOP";
     private static final String TAG = "StopwatchService";
     private static final int NOTIFICATION_ID = 1;
-    // Timer to update the ongoing notification
     private final long mFrequency = 100;    // milliseconds
-    private final int TICK_WHAT = 2;
+    private final int UPDATE_ID = 2;
     private Timer timer;
     private LocalBinder localBinder = new LocalBinder();
     private NotificationManager notificationManager;
     private NotificationCompat.Builder builder;
+
     private Handler mHandler = new Handler() {
         public void handleMessage(Message m) {
             updateNotification();
-            sendMessageDelayed(Message.obtain(this, TICK_WHAT), mFrequency);
+            sendMessageDelayed(Message.obtain(this, UPDATE_ID), mFrequency);
         }
     };
+
+    private BroadcastReceiver timerReceiver;
+
 
     @Nullable
     @Override
@@ -48,35 +56,71 @@ public class TimerService extends Service {
 
         timer = new Timer();
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        final IntentFilter filter = new IntentFilter();
+        filter.addAction(START_ACTION);
+        filter.addAction(PAUSE_ACTION);
+        filter.addAction(RESTART_ACTION);
+        filter.addAction(STOP_ACTION);
+        timerReceiver = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                switch (intent.getAction()) {
+                    case START_ACTION:
+                        start();
+                        break;
+                    case PAUSE_ACTION:
+                        pause();
+                        break;
+                    case RESTART_ACTION:
+                        break;
+                    case STOP_ACTION:
+                        stop();
+                        break;
+                    default:
+                        break;
+                }
+            }
+        };
+        registerReceiver(timerReceiver, filter);
 
-        createNotification();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
     }
 
     public void createNotification() {
         Timber.d("creating notification");
 
         int icon = R.drawable.ic_app_icon_256;
-        CharSequence tickerText = "Stopwatch";
         long when = System.currentTimeMillis();
+
+        Intent stopIntent = new Intent(STOP_ACTION);
+        PendingIntent stopPendingIntent = PendingIntent.getBroadcast(this,
+                0, stopIntent, 0);
+
         builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(icon)
-                .setContentText(tickerText)
+                .setContentText(TAG)
                 .setWhen(when)
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setOnlyAlertOnce(true)
+                .setUsesChronometer(true)
                 .setContentIntent(
                         PendingIntent.getActivity(this, 10,
                                 new Intent(this, MainActivity.class)
                                         .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP),
                                 0)
-                );
+                )
+                .addAction(R.drawable.ic_action_stop, getString(R.string.stop),
+                        stopPendingIntent);
+
         notificationManager.notify(NOTIFICATION_ID, builder.build());        //TODO: Large icon when bitmap is assigned
     }
 
     public void updateNotification() {
-
-        // the next two lines initialize the Notification, using the configurations above
         notificationManager.notify(NOTIFICATION_ID, builder.build());
     }
 
@@ -84,27 +128,33 @@ public class TimerService extends Service {
         Timber.d("showing notification");
 
         updateNotification();
-        mHandler.sendMessageDelayed(Message.obtain(mHandler, TICK_WHAT), mFrequency);
+        mHandler.sendMessageDelayed(Message.obtain(mHandler, UPDATE_ID), mFrequency);
     }
 
     public void hideNotification() {
         Timber.d(TAG, "removing notification");
 
         notificationManager.cancel(NOTIFICATION_ID);
-        mHandler.removeMessages(TICK_WHAT);
+        mHandler.removeMessages(UPDATE_ID);
     }
 
     public void start() {
         Timber.d(TAG, "start");
+        createNotification();
         timer.startCycle();
-
         showNotification();
     }
 
     public void pause() {
         Timber.d(TAG, "pause");
         timer.pause();
+    }
 
+    public void stop() {
+        Timber.d(TAG, "stop");
+        timer.reset();
+
+        hideNotification();
     }
 
     private String formatElapsedTime(long now) {
@@ -142,7 +192,7 @@ public class TimerService extends Service {
     }
 
     private String formatDigits(long num) {
-        return (num < 10) ? "0" + num : new Long(num).toString();
+        return (num < 10) ? "0" + num : Long.valueOf(num).toString();
     }
 
     public class LocalBinder extends Binder {
@@ -150,6 +200,5 @@ public class TimerService extends Service {
             return TimerService.this;
         }
     }
-
 
 }
