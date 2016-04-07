@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 23
-    buildToolsVersion "23.0.2"
+    buildToolsVersion "23.0.3"
 
     defaultConfig {
         applicationId "com.ijunes.laundrytimer"
@@ -14,7 +14,7 @@ android {
     buildTypes {
         release {
             minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            proguardFiles getDefaultProguardFile('mobile/build.gradle:30proguard-android.txt'), 'proguard-rules.pro'
         }
     }
 }
@@ -29,7 +29,7 @@ dependencies {
     compile 'com.google.android.gms:play-services-ads:8.4.0'
     compile 'com.google.android.gms:play-services-auth:8.4.0'
     compile 'io.reactivex:rxjava:1.1.0'
-    compile 'io.reactivex:rxandroid:$rxAndroidLibVersion'
+    compile 'io.reactivex:rxandroid:1.1.0'
     compile ("com.hwangjr.rxbus:rxbus:1.0.3@aar") {
         exclude group: 'com.hwangjr.utils', module: 'timber'
     }
