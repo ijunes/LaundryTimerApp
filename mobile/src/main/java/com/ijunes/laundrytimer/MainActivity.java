@@ -31,9 +31,12 @@ import com.ijunes.laundrytimer.event.EventBus;
 import com.ijunes.laundrytimer.service.TimerService;
 import com.ijunes.laundrytimer.widgets.SlidingTabLayout;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    @Bind(R.id.main_toolbar) Toolbar toolbar;
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
      * fragments for each of the sections. We use a
@@ -77,7 +80,8 @@ public class MainActivity extends AppCompatActivity
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.main_toolbar);
+        ButterKnife.bind(this);
+
         setSupportActionBar(toolbar);
 
         mSlidingTabLayout = (SlidingTabLayout) findViewById(R.id.main_sliding_tabs);

@@ -1,5 +1,11 @@
 package com.ijunes.laundrytimer.service;
 
+import android.content.res.Resources;
+
+import com.ijunes.laundrytimer.MainActivity;
+import com.ijunes.laundrytimer.MainApplication;
+import com.ijunes.laundrytimer.R;
+
 import timber.log.Timber;
 
 /**
@@ -18,7 +24,6 @@ public class Timer {
     };
     private GetTime mTime;
     private long mStartTime;
-
     private long mStopTime;
     private long mPauseOffset;
     private long mDurationWash;
@@ -32,29 +37,31 @@ public class Timer {
      * STOPPED means cycle complete
      */
     public enum State {
-        IDLE, PAUSED, RUNNING, STOPPED
+        IDLE, PAUSED, RUNNING, STOPPED, WASH, DRY
     }
 
-    public Timer() {
-        mTime = systemTime;
+    public enum Cycle{}
+
+    public Timer(State state) {
+        mState = state;
         reset();
-    }
-    public Timer(GetTime time) {
-        mTime = time;
-        reset();
+        startCycle();
+        final Resources resources =  MainApplication.get().getResources();
+        mDurationWash = resources.getInteger(R.integer.temp_wash_duration_minutes);
+        mDurationDry = resources.getInteger(R.integer.temp_dry_duration_minutes);
     }
     /**
      * Start the stopwatch running. If the stopwatch is already running, this
      * does nothing.
      */
     public void startCycle() {
-        if (mState == State.IDLE) {
+        if (mState == State.WASH) {
             mStartTime = mTime.current();
             mStopTime = mStartTime + mDurationWash;
             Timber.d("Starting Wash Phase at" + String.valueOf(mStartTime));
             Timber.d("Expecting to finish Wash Phase at" + String.valueOf(mStopTime));
             mState = State.RUNNING;
-        } else if (mState == State.PAUSED) {
+        } else if (mState == State.DRY) {
             mPauseOffset = getElapsedTime();
             mStartTime = mTime.current();
             mStopTime = mStartTime + mDurationDry;
@@ -92,7 +99,6 @@ public class Timer {
     public void reset() {
         mState = State.IDLE;
         mStartTime = 0;
-        mStopTime = 0;
         mPauseOffset = 0;
     }
 

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="temp_wash_duration_minutes">30</integer>
+    <integer name="temp_dry_duration_minutes">50</integer>
+</resources>

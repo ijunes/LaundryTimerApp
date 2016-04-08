@@ -13,6 +13,7 @@ import android.os.IBinder;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.support.v7.app.NotificationCompat;
+import android.widget.RemoteViews;
 
 import com.ijunes.laundrytimer.MainActivity;
 import com.ijunes.laundrytimer.R;
@@ -24,7 +25,7 @@ public class TimerService extends Service {
     public static final String PAUSE_ACTION = "com.ijunes.laundrytimer.timer.PAUSE";
     public static final String RESTART_ACTION = "com.ijunes.laundrytimer.timer.RESTART";
     public static final String STOP_ACTION = "com.ijunes.laundrytimer.timer.STOP";
-    private static final String TAG = "StopwatchService";
+    private static final String TAG = "LaundryTimerApp";
     private static final int NOTIFICATION_ID = 1;
     private final long mFrequency = 100;    // milliseconds
     private final int UPDATE_ID = 2;
@@ -54,7 +55,7 @@ public class TimerService extends Service {
         super.onCreate();
         Timber.d(TimerService.this.getClass().getName() + "created");
 
-        timer = new Timer();
+
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         final IntentFilter filter = new IntentFilter();
         filter.addAction(START_ACTION);
@@ -100,14 +101,15 @@ public class TimerService extends Service {
         PendingIntent stopPendingIntent = PendingIntent.getBroadcast(this,
                 0, stopIntent, 0);
 
+        RemoteViews remoteViews = new RemoteViews("com.ijunes.laundrytimer", R.layout.notification_timer_view);
         builder = new NotificationCompat.Builder(this);
         builder.setSmallIcon(icon)
-                .setContentText(TAG)
+                .setContent(remoteViews)
                 .setWhen(when)
                 .setOngoing(true)
                 .setAutoCancel(false)
                 .setOnlyAlertOnce(true)
-                .setUsesChronometer(true)
+                .setUsesChronometer(false)
                 .setContentIntent(
                         PendingIntent.getActivity(this, 10,
                                 new Intent(this, MainActivity.class)
@@ -140,8 +142,8 @@ public class TimerService extends Service {
 
     public void start() {
         Timber.d(TAG, "start");
+        timer = new Timer(Timer.State.WASH);
         createNotification();
-        timer.startCycle();
         showNotification();
     }
 

@@ -22,9 +22,38 @@
         app:waveColor="#3498db"
         app:waveMax="100" />
 
-    <TextView
+    <TextClock
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="text_Clock"/>
+
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/section_label"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/wave_progress_view"/>
+
+    <android.support.v7.widget.AppCompatButton
+        style="@style/AppTheme.Button"
+        android:id="@+id/temp_timer_wash_button"
+        android:layout_below="@+id/section_label"
+        android:text="Wash Start"/>
+
+    <android.support.v7.widget.AppCompatButton
+        style="@style/AppTheme.Button"
+        android:id="@+id/temp_timer_dry_button"
+        android:layout_below="@+id/section_label"
+        android:layout_toRightOf="@id/temp_timer_wash_button"
+        android:layout_toEndOf="@id/temp_timer_wash_button"
+        android:text="Dry Start"
+        />
+
+    <android.support.v7.widget.AppCompatButton
+        style="@style/AppTheme.Button"
+        android:id="@+id/temp_timer_reset_button"
+        android:layout_below="@+id/section_label"
+        android:layout_toRightOf="@id/temp_timer_dry_button"
+        android:layout_toEndOf="@id/temp_timer_wash_button"
+        android:text="Stop"/>
 
 </RelativeLayout>
