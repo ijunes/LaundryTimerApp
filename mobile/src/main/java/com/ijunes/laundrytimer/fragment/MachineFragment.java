@@ -16,7 +16,7 @@ import com.ijunes.laundrytimer.R;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-public class PlaceholderFragment extends Fragment {
+public class MachineFragment extends Fragment {
 
     @Bind(R.id.section_label) TextView tempTextView;
     @Bind(R.id.wave_progress_view) WaveProgressView waveProgressView;
@@ -33,23 +33,28 @@ public class PlaceholderFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      */
-    public static PlaceholderFragment newInstance(int sectionNumber) {
-        PlaceholderFragment fragment = new PlaceholderFragment();
+    public static MachineFragment newInstance(int sectionNumber) {
+        MachineFragment fragment = new MachineFragment();
         Bundle args = new Bundle();
         args.putInt(ARG_SECTION_NUMBER, sectionNumber);
         fragment.setArguments(args);
         return fragment;
     }
 
-    public PlaceholderFragment() {
+    public MachineFragment() {
     }
 
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.fragment_main, container, false);
-        ButterKnife.bind(this, rootView);
+        final View rootView;
+
+        if(container == null) {
+           rootView = inflater.inflate(R.layout.fragment_main, container, false);
+            ButterKnife.bind(this, rootView);
+        }
+
 
         WaveProgressView newProgressView = new WaveProgressView(this.getContext());
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
