@@ -59,6 +59,11 @@ public class PlaceholderFragment extends Fragment {
         setupButtonListeners();
     }
 
+    @Override public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
     private void washWave(WaveProgressView waveProgressView, long duration){
         ObjectAnimator progressAnim = ObjectAnimator.ofInt(waveProgressView, "progress", 0, waveProgressView.getMax());
         progressAnim.setDuration(duration);
