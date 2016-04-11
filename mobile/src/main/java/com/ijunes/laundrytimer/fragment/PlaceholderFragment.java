@@ -18,11 +18,11 @@ import butterknife.ButterKnife;
 
 public class PlaceholderFragment extends Fragment {
 
-    @Bind(R.id.section_label) TextView tempTextView;
+    @Bind(R.id.tempTextView) TextView tempTextView;
     @Bind(R.id.wave_progress_view) WaveProgressView waveProgressView;
-    @Bind(R.id.temp_timer_wash_button) AppCompatButton washButton;
-    @Bind(R.id.temp_timer_dry_button) AppCompatButton dryButton;
-    @Bind(R.id.temp_timer_reset_button) AppCompatButton resetButton;
+    @Bind(R.id.tempTimerWashButton) AppCompatButton washButton;
+    @Bind(R.id.tempTimerDryButton) AppCompatButton dryButton;
+    @Bind(R.id.tempTimerResetButton) AppCompatButton resetButton;
     /**
      * The fragment argument representing the section number for this
      * fragment.

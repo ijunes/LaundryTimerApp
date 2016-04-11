@@ -3,6 +3,7 @@
     <color name="colorPrimary">#90CAF9</color>
     <color name="colorPrimaryDark">#1565C0</color>
     <color name="colorAccent">#00ACC1</color>
+    <color name="colorBackground">#E3F2FD</color>
     <color name="washWaveColor">#00ACC1</color>
     <color name="dryWaveColor">#ff4500</color>
 

@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Binder;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
@@ -34,6 +35,7 @@ public class TimerService extends Service {
     private NotificationManager notificationManager;
     private NotificationCompat.Builder builder;
 
+    private CountDownTimer countDownTimer;
     private Handler mHandler = new Handler() {
         public void handleMessage(Message m) {
             updateNotification();
@@ -55,7 +57,6 @@ public class TimerService extends Service {
         super.onCreate();
         Timber.d(TimerService.this.getClass().getName() + "created");
 
-
         notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         final IntentFilter filter = new IntentFilter();
         filter.addAction(START_ACTION);
@@ -65,14 +66,16 @@ public class TimerService extends Service {
         timerReceiver = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Timber.d("Received intent" + intent.getAction());
                 switch (intent.getAction()) {
                     case START_ACTION:
-                        start();
+                        //start();
                         break;
                     case PAUSE_ACTION:
                         pause();
                         break;
                     case RESTART_ACTION:
+                        restart();
                         break;
                     case STOP_ACTION:
                         stop();
@@ -82,7 +85,7 @@ public class TimerService extends Service {
                 }
             }
         };
-        registerReceiver(timerReceiver, filter);
+        //registerReceiver(timerReceiver, filter);
 
     }
 
@@ -143,6 +146,16 @@ public class TimerService extends Service {
     public void start() {
         Timber.d(TAG, "start");
         timer = new Timer(Timer.State.WASH);
+
+        timer.startCycle();
+        createNotification();
+        showNotification();
+    }
+
+    public void restart() {
+        Timber.d(TAG, "start");
+        timer = new Timer(Timer.State.DRY);
+        timer.startCycle();
         createNotification();
         showNotification();
     }
@@ -195,6 +208,10 @@ public class TimerService extends Service {
 
     private String formatDigits(long num) {
         return (num < 10) ? "0" + num : Long.valueOf(num).toString();
+    }
+
+    public CountDownTimer getCountDownTimer() {
+        return countDownTimer;
     }
 
     public class LocalBinder extends Binder {

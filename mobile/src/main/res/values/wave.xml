@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="waveLayoutWidth">200dp</dimen>
+    <dimen name="waveLayoutHeight">200dp</dimen>
+    <dimen name="waveAmplitude">4dp</dimen>
+    <dimen name="waveBorderRadius">2dp</dimen>
+    <dimen name="waveBorderWidth">3dp</dimen>
+    <dimen name="waveLayoutMarginBottom">3dp</dimen>
+
+</resources>

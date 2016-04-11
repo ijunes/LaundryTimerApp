@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -46,7 +47,7 @@ public class MainActivity extends AppCompatActivity
      * {@link android.support.v4.app.FragmentStatePagerAdapter}.
      */
     private SectionsPagerAdapter mSectionsPagerAdapter;
-
+    CountDownTimer timer;
     /**
      * The {@link ViewPager} that will host the section contents.
      */
@@ -57,6 +58,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mTimerService = ((TimerService.LocalBinder) service).getService();
+            timer = mTimerService.getCountDownTimer();
         }
 
         @Override
@@ -68,6 +70,7 @@ public class MainActivity extends AppCompatActivity
     private void bindTimerService() {
         bindService(new Intent(this, TimerService.class),
                 mTimerServiceConn, Context.BIND_AUTO_CREATE);
+
     }
 
     private void unbindTimerService() {

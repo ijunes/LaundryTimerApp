@@ -1,6 +1,7 @@
 package com.ijunes.laundrytimer.service;
 
 import android.content.res.Resources;
+import android.os.CountDownTimer;
 
 import com.ijunes.laundrytimer.MainActivity;
 import com.ijunes.laundrytimer.MainApplication;
@@ -11,7 +12,7 @@ import timber.log.Timber;
 /**
  * Timer object for TimerService
  */
-public class Timer {
+public class Timer extends CountDownTimer {
 
     /**
      * Default method for retreiving currentTimeMillis
@@ -29,6 +30,17 @@ public class Timer {
     private long mDurationWash;
     private long mDurationDry;
     private State mState;
+
+    @Override
+    public void onTick(long millisUntilFinished) {
+
+    }
+
+    @Override
+    public void onFinish() {
+
+    }
+
     /**
      * States for timer.
      * IDLE means cycle has not started
@@ -43,17 +55,20 @@ public class Timer {
     public enum Cycle{}
 
     public Timer(State state) {
+        super(state == State.WASH ? 30000 : 50000, 1000);
         mState = state;
-        reset();
-        startCycle();
+        //reset();
+        //startCycle();
         final Resources resources =  MainApplication.get().getResources();
         mDurationWash = resources.getInteger(R.integer.temp_wash_duration_minutes);
         mDurationDry = resources.getInteger(R.integer.temp_dry_duration_minutes);
+
     }
     /**
      * Start the stopwatch running. If the stopwatch is already running, this
      * does nothing.
      */
+    @Deprecated
     public void startCycle() {
         if (mState == State.WASH) {
             mStartTime = mTime.current();
