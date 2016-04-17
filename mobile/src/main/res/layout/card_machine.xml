@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/card_view"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="5dp"
+    card_view:cardCornerRadius="4dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/cardMachineName"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:background="@color/colorBackground"
+            android:gravity="center_vertical"
+            android:text="contact det"
+            android:textColor="@color/colorPrimaryDark"
+            android:textSize="@dimen/machineCardTextSizeLarge" />
+
+        <TextView
+            android:id="@+id/cardMachineStatus"
+            android:layout_below="@id/cardMachineName"
+            android:text="Status"
+            style="@style/AppTheme.MachineCard.Contents"/>
+
+        <TextView
+            android:id="@+id/cardMachineSubTitle"
+            android:layout_below="@id/cardMachineStatus"
+            android:text="Surname"
+            style="@style/AppTheme.MachineCard.Contents"/>
+
+        <TextView
+            android:id="@+id/cardMachineInfo"
+            android:layout_alignBaseline="@id/cardMachineName"
+            android:text="Email"
+            style="@style/AppTheme.MachineCard.Info" />
+
+
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/cardMachineType"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_wash_icon"
+            android:layout_below="@id/cardMachineStatus"
+            android:layout_alignParentBottom="true"
+            android:layout_alignParentRight="true"
+            android:contentDescription="Machine Type Wash/Dry" />
+
+        <ImageView
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:id="@+id/cardMachineActive"
+            android:foregroundGravity="center"
+            android:scaleType="fitCenter"
+            android:src="@drawable/ic_active_icon"
+            android:visibility="invisible"
+            android:layout_above="@+id/cardMachineType"
+            android:contentDescription="" />
+
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

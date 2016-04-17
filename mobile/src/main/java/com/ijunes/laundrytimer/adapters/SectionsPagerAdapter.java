@@ -4,8 +4,8 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
+import com.ijunes.laundrytimer.fragment.CycleFragment;
 import com.ijunes.laundrytimer.fragment.MachineFragment;
-import com.ijunes.laundrytimer.fragment.PlaceholderFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
@@ -16,14 +16,14 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
     @Override
     public Fragment getItem(int position) {
         // getItem is called to instantiate the fragment for the given page.
-        // Return a PlaceholderFragment (defined as a static inner class below).
+        // Return a MachineFragment (defined as a static inner class below).
         switch(position){
             case 0:
-                return MachineFragment.newInstance(0);
+                return CycleFragment.newInstance(0);
             case 1:
-                return PlaceholderFragment.newInstance(position + 1);
+                return MachineFragment.newInstance(position + 1);
             default:
-                return MachineFragment.newInstance(0);
+                return CycleFragment.newInstance(0);
         }
     }
 

@@ -19,6 +19,8 @@ import android.widget.RemoteViews;
 import com.ijunes.laundrytimer.MainActivity;
 import com.ijunes.laundrytimer.R;
 
+import java.util.HashMap;
+
 import timber.log.Timber;
 
 public class TimerService extends Service {
@@ -26,6 +28,7 @@ public class TimerService extends Service {
     public static final String PAUSE_ACTION = "com.ijunes.laundrytimer.timer.PAUSE";
     public static final String RESTART_ACTION = "com.ijunes.laundrytimer.timer.RESTART";
     public static final String STOP_ACTION = "com.ijunes.laundrytimer.timer.STOP";
+    public static final String UPDATE_BROADCAST = "com.ijunes.laundrytimer.timer.UPDATE";
     private static final String TAG = "LaundryTimerApp";
     private static final int NOTIFICATION_ID = 1;
     private final long mFrequency = 100;    // milliseconds
@@ -35,7 +38,9 @@ public class TimerService extends Service {
     private NotificationManager notificationManager;
     private NotificationCompat.Builder builder;
 
-    private CountDownTimer countDownTimer;
+    private CountDownTimer countDownTimer = null;
+
+    private HashMap<Long, Integer> inProgress = new HashMap<>(2);
     private Handler mHandler = new Handler() {
         public void handleMessage(Message m) {
             updateNotification();
@@ -69,7 +74,7 @@ public class TimerService extends Service {
                 Timber.d("Received intent" + intent.getAction());
                 switch (intent.getAction()) {
                     case START_ACTION:
-                        //start();
+                        start(intent.getExtras().getLong("WASHID"), intent.getExtras().getLong("DURATION"));
                         break;
                     case PAUSE_ACTION:
                         pause();
@@ -85,7 +90,7 @@ public class TimerService extends Service {
                 }
             }
         };
-        //registerReceiver(timerReceiver, filter);
+        registerReceiver(timerReceiver, filter);
 
     }
 
@@ -143,14 +148,35 @@ public class TimerService extends Service {
         mHandler.removeMessages(UPDATE_ID);
     }
 
-    public void start() {
+    public void start(final long washId, long durationMillis) {
         Timber.d(TAG, "start");
         timer = new Timer(Timer.State.WASH);
+        int tick = durationMillis > 60000 ? 2000 : 1000;
+        countDownTimer = new CountDownTimer(durationMillis, tick) {
+            @Override
+            public void onTick(long millisUntilFinished) {
+                try {
+                    long timeElapsed = 600000 - millisUntilFinished;
+                    float percentFinished = ((float) timeElapsed / (float) 600000) * (float) 100;
+                    inProgress.put(washId, (int) percentFinished);
+                    sendTimerBroadcast(UPDATE_BROADCAST, washId, (int) percentFinished);
 
-        timer.startCycle();
+                } catch(Exception e){
+                    Timber.d(e.getMessage());
+                }
+            }
+
+            @Override
+            public void onFinish() {
+
+            }
+        };
+        countDownTimer.start();
         createNotification();
         showNotification();
     }
+
+    public void getProgress(){}
 
     public void restart() {
         Timber.d(TAG, "start");
@@ -217,6 +243,20 @@ public class TimerService extends Service {
     public class LocalBinder extends Binder {
         public TimerService getService() {
             return TimerService.this;
+        }
+    }
+
+    private void sendTimerBroadcast(String message, long washId, int percentComplete){
+        Intent updateIntent = new Intent(message);
+        updateIntent.putExtra("WASH_ID", washId);
+        updateIntent.putExtra("PROGRESS", percentComplete);
+        PendingIntent startPendingIntent = PendingIntent.getBroadcast(this,
+                0, updateIntent, 0);
+
+        try {
+            startPendingIntent.send();
+        } catch (PendingIntent.CanceledException e) {
+            e.printStackTrace();
         }
     }
 
